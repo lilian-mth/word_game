@@ -34,55 +34,80 @@ function peutFormerMot(motDico, lettresDispo) {
 }
 
 
-// 3. La fonction principale déclenchée par le bouton
 function lancerRecherche() {
-    // On récupère les valeurs tapées par l'utilisateur
     const lettres = document.getElementById('lettres').value.toLowerCase();
-    const debut = document.getElementById('debut').value.toLowerCase();
-    const longueur = parseInt(document.getElementById('longueur').value);
+    
+    // On récupère la longueur (si elle est vide, on met 0 ou on ignore, mais ici parseInt gère)
+    const longueurInput = document.getElementById('longueur').value;
+    const longueur = longueurInput ? parseInt(longueurInput) : null;
+
+    // On récupère les 5 cases dans un tableau
+    const pattern = [
+        document.getElementById('pos1').value.toLowerCase(),
+        document.getElementById('pos2').value.toLowerCase(),
+        document.getElementById('pos3').value.toLowerCase(),
+        document.getElementById('pos4').value.toLowerCase(),
+        document.getElementById('pos5').value.toLowerCase()
+    ];
 
     // Vérification de base
     if (lettres.length === 0) {
-        alert("Tu dois entrer tes lettres au minimum !");
+        alert("Tu dois entrer tes lettres disponibles au minimum !");
         return;
     }
 
-    // On prépare le tableau des résultats
+    // GESTION DES ERREURS : Vérifier si une lettre est mal placée par rapport à la longueur
+    if (longueur === 3 && (pattern[3] !== "" || pattern[4] !== "")) {
+        alert("Erreur : Tu as mis une lettre en position 4 ou 5, alors que tu cherches un mot de 3 lettres !");
+        return;
+    }
+    if (longueur === 4 && pattern[4] !== "") {
+        alert("Erreur : Tu as mis une lettre en position 5, alors que tu cherches un mot de 4 lettres !");
+        return;
+    }
+
     let motsTrouves = [];
 
-    // On parcourt tout notre dictionnaire
+    // On parcourt le dictionnaire
     for (let mot of dictionnaire) {
         
-        // A. Vérification de la longueur (si l'utilisateur a rempli le champ)
+        // A. Vérification de la longueur
         if (longueur && mot.length !== longueur) {
-            continue; // On passe au mot suivant
+            continue;
         }
 
-        // B. Vérification de la lettre de début (si rempli)
-        if (debut && !mot.startsWith(debut)) {
-            continue; // On passe au mot suivant
+        // B. L'épreuve : est-ce qu'on peut l'écrire avec nos lettres ?
+        if (!peutFormerMot(mot, lettres)) {
+            continue;
         }
 
-        // C. L'épreuve finale : est-ce qu'on peut l'écrire avec nos lettres ?
-        if (peutFormerMot(mot, lettres)) {
+        // C. Vérification du "Pattern" (les 5 cases)
+        let correspondAuPattern = true;
+        for (let i = 0; i < mot.length; i++) {
+            // Si la case n'est pas vide ET que la lettre ne correspond pas à celle du mot
+            if (pattern[i] !== "" && pattern[i] !== mot[i]) {
+                correspondAuPattern = false;
+                break; // On arrête de vérifier ce mot, il est invalide
+            }
+        }
+
+        // Si le mot a passé tous les tests, on l'ajoute !
+        if (correspondAuPattern) {
             motsTrouves.push(mot);
         }
     }
 
-    // 4. Affichage des résultats dans le HTML
+    // Affichage des résultats
     const listeResultats = document.getElementById('resultats');
     const compteur = document.getElementById('compteur');
     
-    // On vide l'ancienne liste
     listeResultats.innerHTML = '';
     compteur.innerText = motsTrouves.length;
 
     if (motsTrouves.length === 0) {
         listeResultats.innerHTML = '<li>Aucun mot trouvé 😢</li>';
     } else {
-        // On trie les mots par ordre alphabétique ou par longueur avant de les afficher
-        motsTrouves.sort((a, b) => b.length - a.length); // Les plus longs d'abord
-        
+        motsTrouves.sort((a, b) => b.length - a.length);
         motsTrouves.forEach(mot => {
             let li = document.createElement('li');
             li.textContent = mot;
