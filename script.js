@@ -115,3 +115,29 @@ function lancerRecherche() {
         });
     }
 }
+
+// --- EFFET DE NAVIGATION AUTOMATIQUE DANS LA GRILLE ---
+
+// On récupère toutes les cases de la grille d'un coup
+const casesGrille = document.querySelectorAll('.grille-pattern input');
+
+casesGrille.forEach((caseActuelle, index) => {
+    
+    // 1. Quand l'utilisateur tape quelque chose (input)
+    caseActuelle.addEventListener('input', () => {
+        // Si la case contient une lettre et qu'on n'est pas à la dernière case
+        if (caseActuelle.value.length === 1 && index < casesGrille.length - 1) {
+            // On met le focus (le curseur) sur la case suivante
+            casesGrille[index + 1].focus();
+        }
+    });
+
+    // 2. Quand l'utilisateur appuie sur une touche du clavier (keydown)
+    caseActuelle.addEventListener('keydown', (evenement) => {
+        // Si on appuie sur "Effacer" (Backspace), que la case est vide, et qu'on n'est pas à la première case
+        if (evenement.key === 'Backspace' && caseActuelle.value === '' && index > 0) {
+            // On remet le focus sur la case précédente
+            casesGrille[index - 1].focus();
+        }
+    });
+});
