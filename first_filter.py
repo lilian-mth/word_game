@@ -12,7 +12,7 @@ with open('mots.txt', 'r', encoding='utf-8') as fichier_entree, \
         mot = ligne.strip().lower()
         
         # Le filtre : on ne garde que les mots entre 3 et 5 lettres
-        if 3 <= len(mot) <= 5:
+        if 3 <= len(mot) <= 8:
             # On écrit le mot validé dans le nouveau fichier
             fichier_sortie.write(mot + '\n')
 

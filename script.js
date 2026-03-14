@@ -36,35 +36,38 @@ function peutFormerMot(motDico, lettresDispo) {
 
 function lancerRecherche() {
     const lettres = document.getElementById('lettres').value.toLowerCase();
-    
-    // On récupère la longueur (si elle est vide, on met 0 ou on ignore, mais ici parseInt gère)
     const longueurInput = document.getElementById('longueur').value;
     const longueur = longueurInput ? parseInt(longueurInput) : null;
 
-    // On récupère les 5 cases dans un tableau
+    // 1. On récupère maintenant les 8 cases
     const pattern = [
         document.getElementById('pos1').value.toLowerCase(),
         document.getElementById('pos2').value.toLowerCase(),
         document.getElementById('pos3').value.toLowerCase(),
         document.getElementById('pos4').value.toLowerCase(),
-        document.getElementById('pos5').value.toLowerCase()
+        document.getElementById('pos5').value.toLowerCase(),
+        document.getElementById('pos6').value.toLowerCase(),
+        document.getElementById('pos7').value.toLowerCase(),
+        document.getElementById('pos8').value.toLowerCase()
     ];
 
-    // Vérification de base
     if (lettres.length === 0) {
         alert("Tu dois entrer tes lettres disponibles au minimum !");
         return;
     }
 
-    // GESTION DES ERREURS : Vérifier si une lettre est mal placée par rapport à la longueur
-    if (longueur === 3 && (pattern[3] !== "" || pattern[4] !== "")) {
-        alert("Erreur : Tu as mis une lettre en position 4 ou 5, alors que tu cherches un mot de 3 lettres !");
-        return;
+    // 2. GESTION DES ERREURS DYNAMIQUE
+    // Vérifie automatiquement si on a rempli une case qui est au-delà de la longueur demandée
+    if (longueur) {
+        for (let i = longueur; i < 8; i++) {
+            if (pattern[i] !== "") {
+                alert(`Erreur : Tu as mis une lettre en position ${i + 1}, alors que tu cherches un mot de ${longueur} lettres !`);
+                return;
+            }
+        }
     }
-    if (longueur === 4 && pattern[4] !== "") {
-        alert("Erreur : Tu as mis une lettre en position 5, alors que tu cherches un mot de 4 lettres !");
-        return;
-    }
+    
+    // ... Le reste de la boucle "for (let mot of dictionnaire)" ne change absolument pas !
 
     let motsTrouves = [];
 
@@ -116,28 +119,3 @@ function lancerRecherche() {
     }
 }
 
-// --- EFFET DE NAVIGATION AUTOMATIQUE DANS LA GRILLE ---
-
-// On récupère toutes les cases de la grille d'un coup
-const casesGrille = document.querySelectorAll('.grille-pattern input');
-
-casesGrille.forEach((caseActuelle, index) => {
-    
-    // 1. Quand l'utilisateur tape quelque chose (input)
-    caseActuelle.addEventListener('input', () => {
-        // Si la case contient une lettre et qu'on n'est pas à la dernière case
-        if (caseActuelle.value.length === 1 && index < casesGrille.length - 1) {
-            // On met le focus (le curseur) sur la case suivante
-            casesGrille[index + 1].focus();
-        }
-    });
-
-    // 2. Quand l'utilisateur appuie sur une touche du clavier (keydown)
-    caseActuelle.addEventListener('keydown', (evenement) => {
-        // Si on appuie sur "Effacer" (Backspace), que la case est vide, et qu'on n'est pas à la première case
-        if (evenement.key === 'Backspace' && caseActuelle.value === '' && index > 0) {
-            // On remet le focus sur la case précédente
-            casesGrille[index - 1].focus();
-        }
-    });
-});
