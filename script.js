@@ -52,7 +52,7 @@ function lancerRecherche() {
     ];
 
     if (lettres.length === 0) {
-        alert("Tu dois entrer tes lettres disponibles au minimum !");
+        alert("You must enter your available letters at least!");
         return;
     }
 
@@ -61,7 +61,8 @@ function lancerRecherche() {
     if (longueur) {
         for (let i = longueur; i < 8; i++) {
             if (pattern[i] !== "") {
-                alert(`Erreur : Tu as mis une lettre en position ${i + 1}, alors que tu cherches un mot de ${longueur} lettres !`);
+               // Avant : alert(`Erreur : Tu as mis une lettre en position ${i + 1}, alors que tu cherches un mot de ${longueur} lettres !`);
+                alert(`Error: You put a letter in position ${i + 1}, but you are looking for a ${longueur}-letter word!`);
                 return;
             }
         }
@@ -108,7 +109,8 @@ function lancerRecherche() {
     compteur.innerText = motsTrouves.length;
 
     if (motsTrouves.length === 0) {
-        listeResultats.innerHTML = '<li>Aucun mot trouvé 😢</li>';
+        // Avant : listeResultats.innerHTML = '<li>Aucun mot trouvé 😢</li>';
+        listeResultats.innerHTML = '<li>No words found 😢</li>';
     } else {
         motsTrouves.sort((a, b) => b.length - a.length);
         motsTrouves.forEach(mot => {
@@ -118,4 +120,31 @@ function lancerRecherche() {
         });
     }
 }
+
+
+// --- EFFET DE NAVIGATION AUTOMATIQUE DANS LA GRILLE ---
+
+// On récupère toutes les cases de la grille d'un coup
+const casesGrille = document.querySelectorAll('.grille-pattern input');
+
+casesGrille.forEach((caseActuelle, index) => {
+    
+    // 1. Quand l'utilisateur tape une lettre
+    caseActuelle.addEventListener('input', () => {
+        // Si la case contient une lettre et qu'on n'est pas à la dernière case
+        if (caseActuelle.value.length === 1 && index < casesGrille.length - 1) {
+            // On met le curseur sur la case suivante
+            casesGrille[index + 1].focus();
+        }
+    });
+
+    // 2. Quand l'utilisateur appuie sur la touche "Effacer" (Backspace)
+    caseActuelle.addEventListener('keydown', (evenement) => {
+        // Si la case est vide et qu'on n'est pas à la première case
+        if (evenement.key === 'Backspace' && caseActuelle.value === '' && index > 0) {
+            // On remet le curseur sur la case précédente
+            casesGrille[index - 1].focus();
+        }
+    });
+});
 
