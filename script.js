@@ -148,3 +148,42 @@ casesGrille.forEach((caseActuelle, index) => {
     });
 });
 
+
+// --- GESTION DES BOUTONS + ET - POUR LA LONGUEUR ---
+
+const btnMoins = document.getElementById('btn-moins');
+const btnPlus = document.getElementById('btn-plus');
+const affichageLongueur = document.getElementById('affichage-longueur');
+const inputLongueur = document.getElementById('longueur');
+
+// On commence à 0 (ce qui signifie "Toutes les longueurs", affiché par un tiret)
+let longueurActuelle = 0; 
+
+function mettreAJourAffichage() {
+    if (longueurActuelle === 0) {
+        affichageLongueur.textContent = "-"; // Tiret = pas de limite
+        inputLongueur.value = ""; // L'input caché est vide
+    } else {
+        affichageLongueur.textContent = longueurActuelle;
+        inputLongueur.value = longueurActuelle;
+    }
+}
+
+btnMoins.addEventListener('click', () => {
+    if (longueurActuelle > 3) {
+        longueurActuelle--;
+    } else if (longueurActuelle === 3) {
+        longueurActuelle = 0; // Si on descend en dessous de 3, on désactive la limite
+    }
+    mettreAJourAffichage();
+});
+
+btnPlus.addEventListener('click', () => {
+    if (longueurActuelle === 0) {
+        longueurActuelle = 3; // Le minimum pour un mot est souvent 3
+    } else if (longueurActuelle < 8) { // 8 est ton max actuel d'après les inputs
+        longueurActuelle++;
+    }
+    mettreAJourAffichage();
+});
+
